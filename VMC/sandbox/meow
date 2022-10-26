@@ -1,3 +1,0 @@
-from bell.avr.mqtt.payloads import AvrPcmSetBaseColorPayload
-
-payload = AvrPcmSetBaseColorPayload((128, 232, 142, 0))
