@@ -1,5 +1,6 @@
 from bell.avr.mqtt.client import MQTTModule
 from bell.avr import utils
+from bell.avr.utils import timing
 from bell.avr.mqtt.payloads import(
     AvrFcmVelocityPayload,
     AvrPcmSetBaseColorPayload,
@@ -7,17 +8,27 @@ from bell.avr.mqtt.payloads import(
     AvrPcmSetTempColorPayload,
     AvrPcmSetServoOpenClosePayload,
 )
+import random
 
 from loguru import logger
+import time
 class Sandbox(MQTTModule):
+    bruh = 0
     def __init__(self) -> None:
         super().__init__()
         self.topic_map = {"avr/fcm/velocity": self.show_velocity}
         self.topic_map = {"avr/apriltags/visible": self.show_april_tag_detected}
         #self.topic_map = {"avr/pcm/set_temp_color": self.show_balls}
     def show_april_tag_detected(self, payload: AvrApriltagsVisiblePayload) -> None:
+        self.send_message(
+            "avr/pcm/set_base_color",
+            {"wrgb": (0, 0, 0, 0)}
+        )
         apriltagList = payload["tags"]
-        self.flash_lights()
+        for _ in range(3):
+            logger.debug("before wait")
+            self.flash_lights()
+            logger.debug("After wait")
         #self.open_servo(2)
     def show_velocity(self, payload: AvrFcmVelocityPayload) -> None:
         vx = payload["vX"]
@@ -25,6 +36,7 @@ class Sandbox(MQTTModule):
         vz = payload["vZ"]
         v_ms = (vx, vy, vz)
         logger.debug(f"Velocity information: {v_ms} m/s")
+
 
     #def show_balls(self, payload: AvrPcmSetTempColorPayload) -> None:
      #   self.lights_on
@@ -36,15 +48,25 @@ class Sandbox(MQTTModule):
           #  {"servo": channel, "action": "open"}
         #)
     def flash_lights(self) -> None:
-        for i in range(3):
-            self.send_message(
-                "avr/pcm/set_temp_color",
-                {"wrgb": (255, 255, 0, 0), "time": 1}
-            )
-            self.send_message(
-                "avr/pcm/set_temp_color",
-                {"wrgb": (0, 0, 0, 0), "time": 1}
-            )
+        
+        #for i in range(3):
+        self.bruh = self.bruh + 1
+        logger.debug("flash_lights()")
+        logger.debug(self.bruh)
+        self.send_message(
+            "avr/pcm/set_temp_color",
+            {"wrgb": (0, random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))}
+        )
+        
+#        self.send_message(
+#            "avr/pcm/set_temp_color",
+#            {"wrgb": (0, 0, 255, 0)}
+#        )
+#        
+#        self.send_message(
+#            "avr/pcm/set_temp_color",
+#            {"wrgb": (0, 0, 0, 255)}
+#        )
 
 if __name__ == "__main__":
     box = Sandbox()
