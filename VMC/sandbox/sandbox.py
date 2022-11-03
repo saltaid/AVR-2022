@@ -18,6 +18,8 @@ class Sandbox(MQTTModule):
         super().__init__()
         self.topic_map = {"avr/fcm/velocity": self.show_velocity}
         self.topic_map = {"avr/apriltags/visible": self.show_april_tag_detected}
+        # NICK : print these topic_maps to understand the messages you're recieving
+        #       
         #self.topic_map = {"avr/pcm/set_temp_color": self.show_balls}
     def show_april_tag_detected(self, payload: AvrApriltagsVisiblePayload) -> None:
         self.send_message(
@@ -67,6 +69,8 @@ class Sandbox(MQTTModule):
 #            "avr/pcm/set_temp_color",
 #            {"wrgb": (0, 0, 0, 255)}
 #        )
+
+
 
 if __name__ == "__main__":
     box = Sandbox()
