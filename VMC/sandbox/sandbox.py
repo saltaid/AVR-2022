@@ -20,42 +20,7 @@ class Sandbox(MQTTModule):
         super().__init__()
         self.topic_map = {"avr/fcm/velocity": self.show_velocity}
         self.topic_map = {"avr/apriltags/visible": self.show_april_tag_detected}
-        self.topic_map = {"avr/autonomous/enable": self.autonomous_enabled}
-
-    def autonomous_enabled(self, payload: AvrAutonomousEnablePayload) -> None:
-        self.isAutonomous = payload["enabled"]
-        logger.debug(f'{self.isAutonomous = }')
-        if self.isAutonomous:
-            
-            time.sleep(1)
-            self.send_message(
-            "avr/pcm/set_temp_color",
-            {"wrgb": (0, random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))}
-        )
-            
-            time.sleep(1)
-            self.send_message(
-            "avr/pcm/set_temp_color",
-            {"wrgb": (0, random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))}
-        )
-            time.sleep(1)
-            self.send_message(
-            "avr/pcm/set_temp_color",
-            {"wrgb": (0, random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))}
-        )
-           
-            
-            
-            
-          
-
-    def light_1(self):
-        self.flash_lights()
-    def light_2(self):
-        self.flash_lights()
-    def light_3(self):
-        self.flash_lights()
-
+        #self.topic_map = {"avr/pcm/set_temp_color": self.show_balls}
     def show_april_tag_detected(self, payload: AvrApriltagsVisiblePayload) -> None:
         apriltagList = payload["tags"]
         logger.info('April tag detected')
@@ -85,6 +50,16 @@ class Sandbox(MQTTModule):
             "avr/pcm/set_temp_color",
             {"wrgb": (0, random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))}
         )
+        
+#        self.send_message(
+#            "avr/pcm/set_temp_color",
+#            {"wrgb": (0, 0, 255, 0)}
+#        )
+#        
+#        self.send_message(
+#            "avr/pcm/set_temp_color",
+#            {"wrgb": (0, 0, 0, 255)}
+#        )
 
 if __name__ == "__main__":
     box = Sandbox()
