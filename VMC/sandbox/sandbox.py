@@ -20,11 +20,22 @@ class Sandbox(MQTTModule):
         super().__init__()
         self.topic_map = {"avr/fcm/velocity": self.show_velocity}
         self.topic_map = {"avr/apriltags/visible": self.show_april_tag_detected}
-        #self.topic_map = {"avr/pcm/set_temp_color": self.show_balls}
+        self.topic_map = {"avr/autonomous/enable": self.autonomous_enabled}
+
+    def autonomous_enabled(self, payload: AvrAutonomousEnablePayload) -> None:
+        self.isAutonomous = payload["enabled"]
+        logger.debug(f'self.isAutonomous = {self.isAutonomous}')
+
     def show_april_tag_detected(self, payload: AvrApriltagsVisiblePayload) -> None:
+        self.send_message(
+            "avr/pcm/set_base_color",
+            {"wrgb": (0, 0, 0, 0)}
+        )
         apriltagList = payload["tags"]
-        logger.info('April tag detected')
-        logger.info(f'tag id: {apriltagList[0]}')
+        for _ in range(3):
+            logger.debug("before wait")
+            self.flash_lights()
+            logger.debug("After wait")
         #self.open_servo(2)
 
     def show_velocity(self, payload: AvrFcmVelocityPayload) -> None:
@@ -50,16 +61,6 @@ class Sandbox(MQTTModule):
             "avr/pcm/set_temp_color",
             {"wrgb": (0, random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))}
         )
-        
-#        self.send_message(
-#            "avr/pcm/set_temp_color",
-#            {"wrgb": (0, 0, 255, 0)}
-#        )
-#        
-#        self.send_message(
-#            "avr/pcm/set_temp_color",
-#            {"wrgb": (0, 0, 0, 255)}
-#        )
 
 if __name__ == "__main__":
     box = Sandbox()
